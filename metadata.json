@@ -9,8 +9,8 @@
   "issues_url": "https://github.com/innogames/puppet-clickhouse/issues",
   "dependencies": [
     {
-      "name": "glarizza-xmlsimple",
-      "version_requirement": ">= 0.0.1 <0.1.0"
+      "name": "innogames-xmlsimple",
+      "version_requirement": ">= 0.1.1 <1.0"
     },
     {
       "name": "puppetlabs-stdlib",
@@ -58,14 +58,6 @@
       "operatingsystemrelease": [
         "16.04",
         "18.04"
-      ]
-    },
-    {
-      "operatingsystem": "windows",
-      "operatingsystemrelease": [
-        "2008 R2",
-        "2012 R2",
-        "10"
       ]
     }
   ],
