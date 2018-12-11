@@ -1,0 +1,11 @@
+---
+fixtures:
+  symlinks:
+    clickhouse: "#{source_dir}"
+  forge_modules:
+    stdlib:
+      repo: 'puppetlabs/stdlib'
+      ref: '4.20.0'
+    apt: 'puppetlabs-apt'
+    yumrepo: 'puppetlabs-yumrepo_core'
+    xmlsimple: 'innogames-xmlsimple'

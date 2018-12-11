@@ -3,3 +3,11 @@ Gemfile:
   required:
     ':dependencies':
       - gem: xml-simple
+'spec/spec_helper.rb':
+  mock_with: ':rspec'
+  spec_overrides: >-
+    RSpec.configure do |c|
+      c.after(:suite) do
+        RSpec::Puppet::Coverage.report!(94)
+      end
+    end
