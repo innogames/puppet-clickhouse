@@ -1,6 +1,6 @@
 {
   "name": "innogames-clickhouse",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "InnoGames GmbH",
   "summary": "Module to install and configure clickhouse server and client",
   "license": "MIT",
@@ -68,7 +68,7 @@
     }
   ],
   "description": "These module provides an easy way to install and configure the clickhosue-server. It requires for 'xml-simple' gem",
-  "pdk-version": "1.7.1",
-  "template-url": "file:///opt/puppetlabs/pdk/share/cache/pdk-templates.git",
-  "template-ref": "1.7.1-0-g810b982"
+  "pdk-version": "1.8.0",
+  "template-url": "https://github.com/puppetlabs/pdk-templates.git",
+  "template-ref": "heads/master-0-gbf720df"
 }
