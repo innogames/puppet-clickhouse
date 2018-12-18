@@ -3,3 +3,27 @@ Gemfile:
   required:
     ':dependencies':
       - gem: xml-simple
+    ':development':
+      - gem: pdk
+'spec/spec_helper.rb':
+  mock_with: ':rspec'
+  spec_overrides: >-
+    RSpec.configure do |c|
+      c.after(:suite) do
+        RSpec::Puppet::Coverage.report!(94)
+      end
+    end
+.travis.yml:
+  user: innogames
+  secure: "u/ze96IcjdM627IJADJeVdNb33njyCfmmq5YnAqbL4GSRANTtmsNclZfh+JVzb3sAuRrm7VI11Ri4TlCuX4o/aSGPa7S7ROQFLHVfhWFqmS5Sa/sE3EoRdfyP90QYdaoYSiCfLPgnOhZrNpmhA+anhGvcdcZ5Zn/+IExB1r0mTaLAf2UqZrpdnNlot6zcCsH5qvGCsc0K1SWRFQMgW/7ThrPjXQoXGlJ/45ZjpDjlThu6ZHjJVSwp3d4o4lFZh/fycT0UfD0Yyd04R6pjXEeGp5txVv7lnC4zyawVVRZaWMEqorCeW/akKjVMaXlGxsRVMBpKDjhJRDOoBSpuqQWGJGB9DsqxShhkfV1gx8ofLNwOPW8to+M/Ykm4je7n/mre4B4ObPVb6aHvFIkb+Y4LMT/eLKnt03DnzWQJLTxCftFdBOozDv4p+efQp3rs8MacRLQe58uV4MCzUR72itR49IG4mNbdFJnpKcHwsvLeds+BLcnyBaHtqX7l8Iaam4KiIpWs0l1zaYa7X9SLkkisZq3VpkyQlLlVEQIFLE27aodYT0Ms9ATOZqPyIcUohx/Oe0T30foZ9+3Sb9yrteJdkf4cBbPUn2Ne6JXwefrEoozdHyi+pKcYjQy+LX0epM0hTfyGjnGupUWm2944oKwLf2YcixeNaZP6YJgSDnMeCc="
+  stages:
+    - test
+    - name: deploy
+      if: tag =~ ^v
+  extras:
+    - stage: deploy
+      env: CHECK='build' DEPLOY_TO_FORGE=yes
+Rakefile:
+  default_disabled_lint_checks:
+    - selector_inside_resource
+    - relative

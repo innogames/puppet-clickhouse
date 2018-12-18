@@ -1,6 +1,6 @@
 {
   "name": "innogames-clickhouse",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "InnoGames GmbH",
   "summary": "Module to install and configure clickhouse server and client",
   "license": "MIT",
@@ -9,8 +9,8 @@
   "issues_url": "https://github.com/innogames/puppet-clickhouse/issues",
   "dependencies": [
     {
-      "name": "glarizza-xmlsimple",
-      "version_requirement": ">= 0.0.1 <0.1.0"
+      "name": "innogames-xmlsimple",
+      "version_requirement": ">= 0.1.1 <1.0"
     },
     {
       "name": "puppetlabs-stdlib",
@@ -59,14 +59,6 @@
         "16.04",
         "18.04"
       ]
-    },
-    {
-      "operatingsystem": "windows",
-      "operatingsystemrelease": [
-        "2008 R2",
-        "2012 R2",
-        "10"
-      ]
     }
   ],
   "requirements": [
@@ -76,7 +68,7 @@
     }
   ],
   "description": "These module provides an easy way to install and configure the clickhosue-server. It requires for 'xml-simple' gem",
-  "pdk-version": "1.7.1",
-  "template-url": "file:///opt/puppetlabs/pdk/share/cache/pdk-templates.git",
-  "template-ref": "1.7.1-0-g810b982"
+  "pdk-version": "1.8.0",
+  "template-url": "https://github.com/puppetlabs/pdk-templates.git",
+  "template-ref": "heads/master-0-gbf720df"
 }
