@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Puppet Class: clickhouse::server
+  
+    &mdash; Documentation by YARD 0.9.14
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "puppet_classes::clickhouse::server";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../puppet_class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (c)</a> &raquo;
+    <span class='title'><span class='object_link'>Puppet Classes</span></span>
+     &raquo; 
+    <span class="title">clickhouse::server</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_class_list_link"
+        href="../puppet_class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Puppet Class: clickhouse::server</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd><span class='object_link'><a href="clickhouse.html" title="puppet_classes::clickhouse (puppet_class)">clickhouse</a></span></dd>
+  </dl>
+  
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>
+      manifests/server.pp
+    </dd>
+  </dl>
+</div>
+
+  <h2>Summary</h2>
+  ClickHouse server class
+
+<h2>Overview</h2>
+<div class="docstring">
+  <div class="discussion">
+    <p>The class installs ClickHouse server and manages service</p>
+
+  </div>
+</div>
+
+
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'><p>Simple use</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_include'>include</span> <span class='id identifier rubyid_clickhouse'>clickhouse</span><span class='op'>::</span><span class='id identifier rubyid_server'>server</span></code></pre>
+    
+      
+        <p class="example_title"><div class='inline'><p>Use with params</p>
+</div></p>
+      
+      <pre class="example code"><code>class { &#39;clickhouse::server&#39;:
+  package_name   =&gt; &#39;clickhouse-server-custom&#39;,
+  package_ensure =&gt; &#39;latest&#39;,
+  service_name   =&gt; &#39;clickhouse-server&#39;,
+  service_ensure =&gt; false,
+  service_enable =&gt; false,
+}</code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>package_name</span>
+      
+      
+        <span class='type'>(<tt>String[1]</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>&#39;clickhouse-server&#39;</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Server package to be installed.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>package_ensure</span>
+      
+      
+        <span class='type'>(<tt>String[1]</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>&#39;installed&#39;</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Server package ensure. See <code>ensure</code> attribute for <code>package</code> resource.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>service_name</span>
+      
+      
+        <span class='type'>(<tt>String[1]</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>$package_name</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Name of the managed service for clickhouse-server.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>service_ensure</span>
+      
+      
+        <span class='type'>(<tt>Variant[Boolean, Enum[
+        'running',
+        'stopped'
+    ]]</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>&#39;running&#39;</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Desired state for <code>$service_name</code>, see <code>ensure</code> for <code>service</code> resource.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>service_enable</span>
+      
+      
+        <span class='type'>(<tt>Variant[Boolean, Enum[
+        'manual',
+        'mask'
+    ]]</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>If <code>$service_name</code> should be enabled, see <code>enable</code> for <code>service</code> resource.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>conf_dir</span>
+      
+      
+        <span class='type'>(<tt>Stdlib::Unixpath</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>&#39;/etc/clickhouse-server&#39;</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Directory with clickhouse-server configuration.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>conf_d_dir</span>
+      
+      
+        <span class='type'>(<tt>Stdlib::Unixpath</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>&quot;${conf_dir}/conf.d&quot;</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Directory with clickhouse-server included configuration.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>users_d_dir</span>
+      
+      
+        <span class='type'>(<tt>Stdlib::Unixpath</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>&quot;${conf_dir}/users.d&quot;</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Directory with clickhouse-server users configuration.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Author:</p>
+<ul class="author">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>InnoGames GmbH</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><div class="method_details_list">
+  <table class="source_code">
+    <tr>
+      <td>
+        <pre class="lines">
+
+
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69</pre>
+      </td>
+      <td>
+        <pre class="code"><span class="info file"># File 'manifests/server.pp', line 36</span>
+
+class clickhouse::server (
+    String[1]        $package_name   = &#39;clickhouse-server&#39;,
+    String[1]        $package_ensure = &#39;installed&#39;,
+    String[1]        $service_name   = $package_name,
+    Variant[Boolean, Enum[
+        &#39;running&#39;,
+        &#39;stopped&#39;
+    ]]               $service_ensure = &#39;running&#39;,
+    Variant[Boolean, Enum[
+        &#39;manual&#39;,
+        &#39;mask&#39;
+    ]]               $service_enable = true,
+    Stdlib::Unixpath $conf_dir       = &#39;/etc/clickhouse-server&#39;,
+    Stdlib::Unixpath $conf_d_dir     = &quot;${conf_dir}/conf.d&quot;,
+    Stdlib::Unixpath $users_d_dir    = &quot;${conf_dir}/users.d&quot;,
+) inherits clickhouse {
+
+    package { $package_name:
+        ensure =&gt; $package_ensure,
+    }
+
+    file { [$conf_d_dir, $users_d_dir]:
+        ensure  =&gt; &#39;directory&#39;,
+        owner   =&gt; $clickhouse::user,
+        group   =&gt; $clickhouse::group,
+        require =&gt; Package[$package_name],
+    }
+
+    service { $service_name:
+        ensure    =&gt; $service_ensure,
+        enable    =&gt; $service_enable,
+        subscribe =&gt; Package[$package_name],
+    }
+}</pre>
+      </td>
+    </tr>
+  </table>
+</div>
+</div>
+
+      <div id="footer">
+     Generated by <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>.
+</div>
+
+    </div>
+  </body>
+</html>
