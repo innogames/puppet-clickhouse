@@ -6,7 +6,7 @@
 #   Is clickhouse-server should be installed or not. It won't be installed by default, because some time you need the client only.
 # @param client [Boolean]
 #   Is clickhouse-client should be installed or not.
-# @param repo [Boolean]
+# @param manage_repo [Boolean]
 #   Is apt or yum repository should be managed. Set to `false` by default to not affect your own repositories policy.
 # @param user
 #   User for configs owning. Strongly recommended staying default.

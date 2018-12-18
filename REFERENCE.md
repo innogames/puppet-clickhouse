@@ -67,11 +67,13 @@ Is clickhouse-client should be installed or not.
 
 Default value: `true`
 
-##### `repo`
+##### `manage_repo`
 
 Data type: `Boolean`
 
 Is apt or yum repository should be managed. Set to `false` by default to not affect your own repositories policy.
+
+Default value: `false`
 
 ##### `user`
 
@@ -91,14 +93,6 @@ Data type: `String[1]`
 Group for configs, see `user` parameter.
 
 Default value: $user
-
-##### `manage_repo`
-
-Data type: `Boolean`
-
-
-
-Default value: `false`
 
 ### clickhouse::client
 
