@@ -1,6 +1,6 @@
 {
   "name": "innogames-clickhouse",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "InnoGames GmbH",
   "summary": "Module to install and configure clickhouse server and client",
   "license": "MIT",
