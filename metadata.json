@@ -70,5 +70,5 @@
   "description": "These module provides an easy way to install and configure the clickhosue-server. It requires for 'xml-simple' gem",
   "pdk-version": "1.8.0",
   "template-url": "https://github.com/puppetlabs/pdk-templates.git",
-  "template-ref": "heads/master-0-gbf720df"
+  "template-ref": "heads/master-0-g20af4c6"
 }
