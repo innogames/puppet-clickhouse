@@ -12,6 +12,8 @@
 #   Subset of attribute `ensure` for `file` type.
 # @param mode
 #   Desired permissions mode for the config file, see `mode` attribute for `file` resource.
+# @param service_notify
+#   If service should be restarted on the config changing.
 #
 # @example Usage
 #   clickhouse::server::config { 'macros':
@@ -37,8 +39,9 @@ define clickhouse::server::config (
         'present',
         'file',
         'absent'
-    ]                       $ensure   = 'present',
-    String[1]               $mode     = '0644',
+    ]                       $ensure         = 'present',
+    String[1]               $mode           = '0644',
+    Boolean                 $service_notify = false,
 ) {
 
     include clickhouse::server
@@ -56,6 +59,10 @@ define clickhouse::server::config (
             group   => $clickhouse::group,
             require => Package[$clickhouse::server::package_name],
             before  => Service[$clickhouse::server::service_name],
+        }
+
+        if ($service_notify) {
+            File[$config_path] ~> Service[$clickhouse::server::service_name]
         }
     }
 }

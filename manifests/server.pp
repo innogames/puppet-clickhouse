@@ -12,6 +12,8 @@
 #   Desired state for `$service_name`, see `ensure` for `service` resource.
 # @param service_enable
 #   If `$service_name` should be enabled, see `enable` for `service` resource.
+# @param config_service_notify
+#   If true, every config managed by this module and requires for server restart will trigger service refresh.
 # @param conf_dir
 #   Directory with clickhouse-server configuration.
 # @param conf_d_dir
@@ -34,20 +36,21 @@
 # @author InnoGames GmbH
 #
 class clickhouse::server (
-    String[1]        $package_name   = 'clickhouse-server',
-    String[1]        $package_ensure = 'installed',
-    String[1]        $service_name   = $package_name,
+    String[1]        $package_name          = 'clickhouse-server',
+    String[1]        $package_ensure        = 'installed',
+    String[1]        $service_name          = $package_name,
     Variant[Boolean, Enum[
         'running',
         'stopped'
-    ]]               $service_ensure = 'running',
+    ]]               $service_ensure        = 'running',
     Variant[Boolean, Enum[
         'manual',
         'mask'
-    ]]               $service_enable = true,
-    Stdlib::Unixpath $conf_dir       = '/etc/clickhouse-server',
-    Stdlib::Unixpath $conf_d_dir     = "${conf_dir}/conf.d",
-    Stdlib::Unixpath $users_d_dir    = "${conf_dir}/users.d",
+    ]]               $service_enable        = true,
+    Boolean          $config_service_notify = true,
+    Stdlib::Unixpath $conf_dir              = '/etc/clickhouse-server',
+    Stdlib::Unixpath $conf_d_dir            = "${conf_dir}/conf.d",
+    Stdlib::Unixpath $users_d_dir           = "${conf_dir}/users.d",
 ) inherits clickhouse {
 
     package { $package_name:

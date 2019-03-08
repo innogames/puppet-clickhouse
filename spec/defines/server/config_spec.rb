@@ -7,13 +7,21 @@ describe 'clickhouse::server::config' do
   let(:params) { { data: { parameter: [{ subparameter: ['value'] }] } } }
 
   context 'without section parameter' do
-    it { is_expected.to compile.and_raise_error(%r{expects a value for parameter 'section'}) }
+    it do
+      is_expected.to compile \
+        .and_raise_error(%r{expects a value for parameter 'section'})
+    end
   end
 
   context 'with section: invalid_value' do
     let(:params) { super().merge(section: 'invalid_value') }
 
-    it { is_expected.to compile.and_raise_error(%r{parameter 'section' expects a match for Enum\['config', 'users'\]}) }
+    it do
+      is_expected.to compile \
+        .and_raise_error(
+          %r{parameter 'section' expects a match for Enum\['config', 'users'\]},
+        )
+    end
   end
 
   context 'with section: config' do
@@ -73,6 +81,15 @@ describe 'clickhouse::server::config' do
         owner: 'clickhouse',
         group: 'clickhouse',
       )
+    end
+  end
+
+  context 'with notification' do
+    let(:params) { super().merge(service_notify: true, section: 'config') }
+
+    it do
+      is_expected.to contain_file('/etc/clickhouse-server/conf.d/custom.xml') \
+        .that_notifies('Service[clickhouse-server]')
     end
   end
 end
