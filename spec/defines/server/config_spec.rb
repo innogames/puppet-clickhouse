@@ -29,20 +29,23 @@ describe 'clickhouse::server::config' do
 
     it do
       is_expected.to contain_class('clickhouse::server').with(
-        conf_d_dir: '/etc/clickhouse-server/conf.d',
+        conf_d_dir: nil,
+        config_d_dir: '/etc/clickhouse-server/config.d',
         users_d_dir: '/etc/clickhouse-server/users.d',
       )
     end
 
     it do
-      out = "\
-<yandex>
-  <parameter>
-    <subparameter>value</subparameter>
-  </parameter>
-</yandex>\n"
-      is_expected.to contain_file('/etc/clickhouse-server/conf.d/custom.xml') \
-        .with_content(out)
+      is_expected.to contain_file('/etc/clickhouse-server/config.d/custom.xml') \
+        .with_content(
+          <<~CONTENT
+            <yandex>
+              <parameter>
+                <subparameter>value</subparameter>
+              </parameter>
+            </yandex>
+          CONTENT
+        )
     end
   end
 
@@ -50,30 +53,34 @@ describe 'clickhouse::server::config' do
     let(:params) { super().merge(section: 'users') }
 
     it do
-      out = "\
-<yandex>
-  <parameter>
-    <subparameter>value</subparameter>
-  </parameter>
-</yandex>\n"
       is_expected.to contain_file('/etc/clickhouse-server/users.d/custom.xml') \
-        .with_content(out)
+        .with_content(
+          <<~CONTENT
+            <yandex>
+              <parameter>
+                <subparameter>value</subparameter>
+              </parameter>
+            </yandex>
+          CONTENT
+        )
     end
   end
 
   context 'custom server config paths' do
-    let(:pre_condition) { "class { 'clickhouse::server': conf_d_dir => '/some/random/path' }" }
+    let(:pre_condition) { "class { 'clickhouse::server': config_d_dir => '/some/random/path' }" }
     let(:params) { super().merge(section: 'config') }
 
     it do
-      out = "\
-<yandex>
-  <parameter>
-    <subparameter>value</subparameter>
-  </parameter>
-</yandex>\n"
       is_expected.to contain_file('/some/random/path/custom.xml') \
-        .with_content(out)
+        .with_content(
+          <<~CONTENT
+            <yandex>
+              <parameter>
+                <subparameter>value</subparameter>
+              </parameter>
+            </yandex>
+          CONTENT
+        )
     end
     it do
       is_expected.to contain_file('/some/random/path').with(
@@ -88,7 +95,7 @@ describe 'clickhouse::server::config' do
     let(:params) { super().merge(service_notify: true, section: 'config') }
 
     it do
-      is_expected.to contain_file('/etc/clickhouse-server/conf.d/custom.xml') \
+      is_expected.to contain_file('/etc/clickhouse-server/config.d/custom.xml') \
         .that_notifies('Service[clickhouse-server]')
     end
   end

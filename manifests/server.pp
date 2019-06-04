@@ -15,11 +15,15 @@
 # @param config_service_notify
 #   If true, every config managed by this module and requires for server restart will trigger service refresh.
 # @param conf_dir
+#   Deprecated, use config_dir
+# @param config_dir
 #   Directory with clickhouse-server configuration.
 # @param conf_d_dir
-#   Directory with clickhouse-server included configuration.
+#   Deprecated, use config_d_dir
+# @param config_d_dir
+#   Directory with clickhouse-server included configuration. Unmanaged configs will be removed from the directory during puppet run.
 # @param users_d_dir
-#   Directory with clickhouse-server users configuration.
+#   Directory with clickhouse-server users configuration. Unmanaged configs will be removed from the directory during puppet run.
 #
 # @example Simple use
 #   include clickhouse::server
@@ -36,29 +40,77 @@
 # @author InnoGames GmbH
 #
 class clickhouse::server (
-    String[1]        $package_name          = 'clickhouse-server',
-    String[1]        $package_ensure        = 'installed',
-    String[1]        $service_name          = $package_name,
+    String[1]                  $package_name          = 'clickhouse-server',
+    String[1]                  $package_ensure        = 'installed',
+    String[1]                  $service_name          = $package_name,
     Variant[Boolean, Enum[
         'running',
         'stopped'
-    ]]               $service_ensure        = 'running',
+    ]]                         $service_ensure        = 'running',
     Variant[Boolean, Enum[
         'manual',
         'mask'
-    ]]               $service_enable        = true,
-    Boolean          $config_service_notify = true,
-    Stdlib::Unixpath $conf_dir              = '/etc/clickhouse-server',
-    Stdlib::Unixpath $conf_d_dir            = "${conf_dir}/conf.d",
-    Stdlib::Unixpath $users_d_dir           = "${conf_dir}/users.d",
+    ]]                         $service_enable        = true,
+    Boolean                    $config_service_notify = true,
+    Optional[Stdlib::Unixpath] $conf_dir              = undef,
+    Stdlib::Unixpath           $config_dir            = $conf_dir ? {
+        undef   => '/etc/clickhouse-server',
+        default => $conf_d_dir,
+    },
+    Optional[Stdlib::Unixpath] $conf_d_dir            = undef,
+    Stdlib::Unixpath           $config_d_dir          = $conf_d_dir ? {
+        undef   => "${config_dir}/config.d",
+        default => $conf_d_dir,
+    },
+    Stdlib::Unixpath           $users_d_dir           = "${config_dir}/users.d",
 ) inherits clickhouse {
+
+    # TODO: remove it in 3 releases
+    if ($conf_d_dir) {
+        notify { 'conf_d deprecation':
+            message  => @("END")
+                Parameter conf_d_dir is deprecated, use config_d_dir
+                Be aware that after remove it the ${conf_d_dir} will be removed as well, you shouldn't use it.
+                See https://clickhouse.yandex/docs/en/operations/configuration_files
+                | END
+            ,
+            loglevel => 'warning',
+        }
+
+        file { $conf_d_dir:
+            ensure  => 'directory',
+            recurse => true,
+            purge   => true,
+            force   => true,
+            owner   => $clickhouse::user,
+            group   => $clickhouse::group,
+            require => Package[$package_name],
+        }
+    } else {
+        file { "${config_dir}/conf.d":
+            ensure => 'absent',
+        }
+
+        file { $config_d_dir:
+            ensure  => 'directory',
+            recurse => true,
+            purge   => true,
+            force   => true,
+            owner   => $clickhouse::user,
+            group   => $clickhouse::group,
+            require => Package[$package_name],
+        }
+    }
 
     package { $package_name:
         ensure => $package_ensure,
     }
 
-    file { [$conf_d_dir, $users_d_dir]:
+    file { $users_d_dir:
         ensure  => 'directory',
+        recurse => true,
+        purge   => true,
+        force   => true,
         owner   => $clickhouse::user,
         group   => $clickhouse::group,
         require => Package[$package_name],

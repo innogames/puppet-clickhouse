@@ -3,7 +3,7 @@
 # @summary generates xml config from hash via ruby xml-simple
 #
 # @param data
-#   This hash will be converted into xml config placed in `$clickhouse::server::conf_d_dir`.
+#   This hash will be converted into xml config placed in `$clickhouse::server::config_d_dir`.
 #
 #   Root will be `<yandex>` by default.
 # @param section
@@ -47,7 +47,7 @@ define clickhouse::server::config (
     include clickhouse::server
 
     with($section ? {
-        'config' => "${clickhouse::server::conf_d_dir}/${title}.xml",
+        'config' => "${clickhouse::server::config_d_dir}/${title}.xml",
         'users'  => "${clickhouse::server::users_d_dir}/${title}.xml",
         default  => error("Attribute \$section is wrong (== ${section}), see the definition"),
     }) |$config_path| {
