@@ -9,11 +9,21 @@
 * [`clickhouse::client`](#clickhouseclient): ClickHouse client class
 * [`clickhouse::repo`](#clickhouserepo): installs repository with ClickHouse DBMS
 * [`clickhouse::server`](#clickhouseserver): ClickHouse server class
+* [`clickhouse::server::config::default_localhost`](#clickhouseserverconfigdefault_localhost): Restricts network access for `default`
+* [`clickhouse::server::config::memory`](#clickhouseserverconfigmemory): Configure memory consumption
+* [`clickhouse::server::config::zookeeper`](#clickhouseserverconfigzookeeper): Set proper zookeeper config
 
 **Defined types**
 
 * [`clickhouse::client::config`](#clickhouseclientconfig): generates xml config from hash via ruby xml-simple
+* [`clickhouse::error`](#clickhouseerror): Implements error logging with continue of manifests application
 * [`clickhouse::server::config`](#clickhouseserverconfig): generates xml config from hash via ruby xml-simple
+* [`clickhouse::server::config::profile`](#clickhouseserverconfigprofile): Define ClickHouse profile
+* [`clickhouse::server::config::user`](#clickhouseserverconfiguser): Define ClickHouse users
+
+**Resource types**
+
+* [`clickhouse_database`](#clickhouse_database): Manages databases on ClickHouse server
 
 ## Classes
 
@@ -113,7 +123,7 @@ class { 'clickhouse::client':
   package_name   => 'clickhouse-client-custom',
   package_ensure => 'hold',
   user           => 'custom-user',
-  conf_d_dir     => '/some/path',
+  config_d_dir   => '/some/path',
 }
 ```
 
@@ -139,11 +149,19 @@ Default value: 'installed'
 
 ##### `conf_d_dir`
 
+Data type: `Optional[Stdlib::Unixpath]`
+
+Deprecated, use config_d_dir.
+
+Default value: `undef`
+
+##### `config_d_dir`
+
 Data type: `Stdlib::Unixpath`
 
-Directory for custom configs.
+Directory for custom configs. Unmanaged configs will be removed from the dirrectory during puppet running.
 
-Default value: '/etc/clickhouse-client/conf.d'
+Default value: $conf_d_dir
 
 ### clickhouse::repo
 
@@ -233,29 +251,251 @@ If `$service_name` should be enabled, see `enable` for `service` resource.
 
 Default value: `true`
 
+##### `config_service_notify`
+
+Data type: `Boolean`
+
+If true, every config managed by this module and requires for server restart will trigger service refresh.
+
+Default value: `true`
+
 ##### `conf_dir`
+
+Data type: `Optional[Stdlib::Unixpath]`
+
+Deprecated, use config_dir
+
+Default value: `undef`
+
+##### `config_dir`
 
 Data type: `Stdlib::Unixpath`
 
 Directory with clickhouse-server configuration.
 
-Default value: '/etc/clickhouse-server'
+Default value: $conf_dir
 
 ##### `conf_d_dir`
 
+Data type: `Optional[Stdlib::Unixpath]`
+
+Deprecated, use config_d_dir
+
+Default value: `undef`
+
+##### `config_d_dir`
+
 Data type: `Stdlib::Unixpath`
 
-Directory with clickhouse-server included configuration.
+Directory with clickhouse-server included configuration. Unmanaged configs will be removed from the directory during puppet run.
 
-Default value: "${conf_dir}/conf.d"
+Default value: $conf_d_dir
 
 ##### `users_d_dir`
 
 Data type: `Stdlib::Unixpath`
 
-Directory with clickhouse-server users configuration.
+Directory with clickhouse-server users configuration. Unmanaged configs will be removed from the directory during puppet run.
 
-Default value: "${conf_dir}/users.d"
+Default value: "${config_dir}/users.d"
+
+### clickhouse::server::config::default_localhost
+
+clickhouse::server::config::default_localhost
+By default, ClickHouse listens only localhost and user `default` is able to connect from anywhere.
+This class, if included, restricts network access.
+
+#### Examples
+
+##### Simple use
+
+```puppet
+include clickhouse::server::config::default_localhost
+```
+
+### clickhouse::server::config::memory
+
+clickhouse::server::config::memory
+This class provide basic memory adjustment for keep ClickHouse server in reasonable limits
+
+* **See also**
+https://clickhouse.tech/docs/en/operations/settings/settings/
+https://clickhouse.tech/docs/en/operations/server_settings/settings/
+
+#### Examples
+
+##### Simple use
+
+```puppet
+include clickhouse::server::config::memory
+```
+
+#### Parameters
+
+The following parameters are available in the `clickhouse::server::config::memory` class.
+
+##### `reserved_memory`
+
+Data type: `Integer[0]`
+
+Memory to leave for system usage and CH overheads like merges and mutations
+
+Default value: 4294967296
+
+##### `mark_cache_size`
+
+Data type: `Integer[0]`
+
+See CH documentation
+
+Default value: 5368709120
+
+##### `uncompressed_cache_size`
+
+Data type: `Optional[Integer[0]]`
+
+See CH documentation
+
+Default value: `undef`
+
+##### `max_memory_usage_for_all_queries`
+
+Data type: `Optional[Integer[0]]`
+
+See CH documentation
+
+Default value: `undef`
+
+##### `max_memory_usage`
+
+Data type: `Optional[Integer[0]]`
+
+See CH documentation
+
+Default value: `undef`
+
+##### `use_uncompressed_cache`
+
+Data type: `Boolean`
+
+See CH documentation
+
+Default value: `true`
+
+##### `external_group_by`
+
+Data type: `Boolean`
+
+See CH documentation
+
+Default value: `true`
+
+##### `external_sort`
+
+Data type: `Boolean`
+
+See CH documentation
+
+Default value: `true`
+
+##### `memory_check`
+
+Data type: `Boolean`
+
+Check if class has proper parameters and raise errors otherwise
+
+Default value: `true`
+
+##### `service_notify`
+
+Data type: `Boolean`
+
+If ClickHouse server should be restarted on the config update
+
+Default value: $clickhouse::server::config_service_notify
+
+### clickhouse::server::config::zookeeper
+
+clickhouse::server::config::zookeeper
+Set proper zookeeper config
+
+#### Examples
+
+##### Use with params
+
+```puppet
+class { 'clickhouse::server::config::zookeeper':
+    nodes    => { 'server1' => 1},
+    user     => 'user',
+    password => 'password',
+}
+```
+
+#### Parameters
+
+The following parameters are available in the `clickhouse::server::config::zookeeper` class.
+
+##### `nodes`
+
+Data type: `Hash[String[1], Integer[1, 255]]`
+
+hash of `zk_server`: `id` to define nodes
+
+##### `port`
+
+Data type: `Integer[1, 65536]`
+
+cilent port of zookeeper cluster
+
+Default value: 2181
+
+##### `session_timeout_ms`
+
+Data type: `Integer[1]`
+
+maximum timeout for client session in milliseconds
+
+Default value: 30000
+
+##### `operation_timeout_ms`
+
+Data type: `Integer[1]`
+
+maximum timeout for operation in milliseconds
+
+Default value: 10000
+
+##### `root`
+
+Data type: `Optional[Stdlib::Unixpath]`
+
+ZNode, that is used as root for znodes used by ClickHouse server
+
+Default value: `undef`
+
+##### `user`
+
+Data type: `Optional[String[1]]`
+
+user if zookeeper uses authorization
+
+Default value: `undef`
+
+##### `password`
+
+Data type: `Optional[String[1]]`
+
+password if zookeeper uses authorization
+
+Default value: `undef`
+
+##### `service_notify`
+
+Data type: `Boolean`
+
+If ClickHouse server should be restarted on the config update
+
+Default value: $clickhouse::server::config_service_notify
 
 ## Defined types
 
@@ -290,7 +530,7 @@ The following parameters are available in the `clickhouse::client::config` defin
 
 Data type: `Hash`
 
-This hash will be converted into xml config placed in `$clickhouse::client::conf_d_dir`.
+This hash will be converted into xml config placed in `$clickhouse::client::config_d_dir`.
 
 Root will be `<config>` by default.
 
@@ -313,6 +553,24 @@ Data type: `String[1]`
 Desired permissions mode for the config file, see `mode` attribute for `file` resource.
 
 Default value: '0644'
+
+### clickhouse::error
+
+clickhouse::error
+Implements error which cause 6 exit code with `--detailed-exitcodes` argument for `puppet run`.
+Work around notifying about severe problem
+
+* **See also**
+https://tickets.puppetlabs.com/browse/PUP-9208?focusedCommentId=703786#comment-703786
+
+#### Examples
+
+##### Simple use
+
+```puppet
+clickhouse::error { 'Error message':
+}
+```
 
 ### clickhouse::server::config
 
@@ -346,7 +604,7 @@ The following parameters are available in the `clickhouse::server::config` defin
 
 Data type: `Hash`
 
-This hash will be converted into xml config placed in `$clickhouse::server::conf_d_dir`.
+This hash will be converted into xml config placed in `$clickhouse::server::config_d_dir`.
 
 Root will be `<yandex>` by default.
 
@@ -375,4 +633,226 @@ Data type: `String[1]`
 Desired permissions mode for the config file, see `mode` attribute for `file` resource.
 
 Default value: '0644'
+
+##### `service_notify`
+
+Data type: `Boolean`
+
+If service should be restarted on the config changing.
+
+Default value: `false`
+
+### clickhouse::server::config::profile
+
+This type defines the ClickHouse profile with specified options
+
+* **See also**
+https://clickhouse.tech/docs/en/operations/settings/settings
+
+#### Examples
+
+##### 
+
+```puppet
+clickhouse::server::config::profile { 'profile_name':
+    databases => {
+        'db_name' => {
+            'table_name'         => ['filter'],
+            'another_table_name' => ['another filter'],
+        },
+    },
+}
+```
+
+#### Parameters
+
+The following parameters are available in the `clickhouse::server::config::profile` defined type.
+
+##### `profile`
+
+Data type: `String[1]`
+
+User profile
+
+Default value: $title
+
+##### `settings`
+
+Data type: `Hash`
+
+Profile settings
+
+### clickhouse::server::config::user
+
+This type defines the ClickHouse users with specified parameters
+
+* **See also**
+https://clickhouse.tech/docs/en/operations/settings/settings_users/,
+https://clickhouse.tech/docs/v20.3/en/operations/access_rights/
+
+#### Examples
+
+##### 
+
+```puppet
+clickhouse::server::config::user { 'username':
+    network   => {
+        'ip'          => [
+            '::',
+            '0.0.0.0',
+        ],
+        'host'        => [
+            'host1.local',
+            'host2.local',
+        ],
+        'host_regexp' => [
+            '[^.]*\.domain\.TLD',
+        ],
+    },
+    profile   => 'profile_name',
+    quota     => 'quota_name',
+    password  => 'password',
+    databases => {
+        'db_name' => {
+            'table_name'         => ['filter'],
+            'another_table_name' => ['another filter'],
+        },
+    },
+}
+```
+
+#### Parameters
+
+The following parameters are available in the `clickhouse::server::config::user` defined type.
+
+##### `networks`
+
+Data type: `Struct[{
+        Optional[ip]          => Array[String[1], 1],
+        Optional[host]        => Array[String[1], 1],
+        Optional[host_regexp] => Array[String[1], 1],
+    }]`
+
+Defines network nodes where from user could connect
+
+##### `profile`
+
+Data type: `String[1]`
+
+User profile
+
+Default value: 'default'
+
+##### `quota`
+
+Data type: `String[1]`
+
+User quota
+
+Default value: 'default'
+
+##### `user`
+
+Data type: `String[1]`
+
+User name
+
+Default value: $title
+
+##### `password`
+
+Data type: `String[0]`
+
+Plaintext password. Will be hashed into sha256 format in xml file
+
+Default value: ''
+
+##### `password_sha256`
+
+Data type: `Optional[
+        Pattern[/\A[0-9a-fA-F]{64}\Z/]
+    ]`
+
+Optional parameter. If defined, `$password` must not be defined
+
+Default value: `undef`
+
+##### `databases`
+
+Data type: `Optional[Hash]`
+
+Optional hash of allowed DBs, tables and filters to implement ACLs
+
+Default value: `undef`
+
+##### `allow_databases`
+
+Data type: `Optional[Array[String[1]]]`
+
+Optional parameter to restrict access to specified databases
+
+Default value: `undef`
+
+##### `allow_dictionaries`
+
+Data type: `Optional[Array[String[1]]]`
+
+Optional parameter to restrict access to specified dictionaries
+
+Default value: `undef`
+
+## Resource types
+
+### clickhouse_database
+
+Manages databases on ClickHouse server
+
+#### Properties
+
+The following properties are available in the `clickhouse_database` type.
+
+##### `ensure`
+
+Valid values: present, absent
+
+CREATE or DROP DATABASE
+
+Default value: present
+
+##### `engine`
+
+Valid values: Lazy, MySQL, Ordinary
+
+Engine of the database
+
+Default value: Ordinary
+
+#### Parameters
+
+The following parameters are available in the `clickhouse_database` type.
+
+##### `name`
+
+namevar
+
+Name of the database
+
+##### `engine_settings`
+
+This parameter depends on the `engine` parameter:
+Lazy: must be Integer[1]
+MySQL: must be Array[String, 4, 4]
+Ordinary: must be undefined
+
+See: https://clickhouse.tech/docs/en/engines/database_engines/
+
+##### `force`
+
+Valid values: `true`, `false`, yes, no
+
+DROP database even if it contains tables
+
+If ENGINE=MySQL for an existing database, it will be dropped anyway since it's just a connector
+
+Default value: `false`
 

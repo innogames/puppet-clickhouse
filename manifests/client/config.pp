@@ -3,7 +3,7 @@
 # @summary generates xml config from hash via ruby xml-simple
 #
 # @param data
-#   This hash will be converted into xml config placed in `$clickhouse::client::conf_d_dir`.
+#   This hash will be converted into xml config placed in `$clickhouse::client::config_d_dir`.
 #
 #   Root will be `<config>` by default.
 # @param ensure
@@ -39,12 +39,10 @@ define clickhouse::client::config (
 
     include clickhouse::client
 
-    file { "${clickhouse::client::conf_d_dir}/${title}.xml":
+    file { "${clickhouse::client::config_d_dir}/${title}.xml":
         ensure  => $ensure,
         content => hash_to_xml($data, {'RootName' => 'config'}),
         mode    => $mode,
-        owner   => $clickhouse::user,
-        group   => $clickhouse::group,
         require => Package[$clickhouse::client::package_name],
     }
 }

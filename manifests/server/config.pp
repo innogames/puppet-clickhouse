@@ -3,7 +3,7 @@
 # @summary generates xml config from hash via ruby xml-simple
 #
 # @param data
-#   This hash will be converted into xml config placed in `$clickhouse::server::conf_d_dir`.
+#   This hash will be converted into xml config placed in `$clickhouse::server::config_d_dir`.
 #
 #   Root will be `<yandex>` by default.
 # @param section
@@ -12,6 +12,8 @@
 #   Subset of attribute `ensure` for `file` type.
 # @param mode
 #   Desired permissions mode for the config file, see `mode` attribute for `file` resource.
+# @param service_notify
+#   If service should be restarted on the config changing.
 #
 # @example Usage
 #   clickhouse::server::config { 'macros':
@@ -37,14 +39,15 @@ define clickhouse::server::config (
         'present',
         'file',
         'absent'
-    ]                       $ensure   = 'present',
-    String[1]               $mode     = '0644',
+    ]                       $ensure         = 'present',
+    String[1]               $mode           = '0644',
+    Boolean                 $service_notify = false,
 ) {
 
     include clickhouse::server
 
     with($section ? {
-        'config' => "${clickhouse::server::conf_d_dir}/${title}.xml",
+        'config' => "${clickhouse::server::config_d_dir}/${title}.xml",
         'users'  => "${clickhouse::server::users_d_dir}/${title}.xml",
         default  => error("Attribute \$section is wrong (== ${section}), see the definition"),
     }) |$config_path| {
@@ -56,6 +59,10 @@ define clickhouse::server::config (
             group   => $clickhouse::group,
             require => Package[$clickhouse::server::package_name],
             before  => Service[$clickhouse::server::service_name],
+        }
+
+        if ($service_notify) {
+            File[$config_path] ~> Service[$clickhouse::server::service_name]
         }
     }
 }
