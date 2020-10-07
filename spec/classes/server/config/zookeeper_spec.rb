@@ -12,6 +12,7 @@ describe 'clickhouse::server::config::zookeeper' do
       .with(
         owner: 'clickhouse',
         group: 'clickhouse',
+        mode: '0440',
         content: <<~CONTENT,
           <yandex>
             <zookeeper>
