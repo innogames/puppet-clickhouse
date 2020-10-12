@@ -44,8 +44,9 @@ jobs:
       stage: deploy
 branches:
   only:
-    - master
+    - main
     - /^v\d/
+    - master
 notifications:
   email: false
 deploy:

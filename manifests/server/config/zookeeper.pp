@@ -24,6 +24,9 @@
 # @param password
 #   password if zookeeper uses authorization
 #
+# @param mode
+#   zookeeper nodes, ports and optional user and password are confidential data and normally should not be readable
+#
 # @param service_notify
 #   If ClickHouse server should be restarted on the config update
 #
@@ -44,6 +47,7 @@ class clickhouse::server::config::zookeeper (
     Optional[Stdlib::Unixpath]       $root                 = undef,
     Optional[String[1]]              $user                 = undef,
     Optional[String[1]]              $password             = undef,
+    String[1]                        $mode                 = '0440',
     Boolean                          $service_notify       = $clickhouse::server::config_service_notify,
 ) inherits clickhouse::server {
 
@@ -73,5 +77,6 @@ class clickhouse::server::config::zookeeper (
         section        => 'config',
         data           => $zookeeper_data,
         service_notify => $service_notify,
+        mode           => $mode,
     }
 }
