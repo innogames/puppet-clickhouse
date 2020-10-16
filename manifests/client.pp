@@ -58,6 +58,7 @@ class clickhouse::client(
     } else {
         file { '/etc/clickhouse-client/conf.d':
             ensure => 'absent',
+            force  => true,
         }
 
         file { $config_d_dir:
