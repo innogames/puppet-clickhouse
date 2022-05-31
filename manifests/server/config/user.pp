@@ -17,6 +17,9 @@
 # @param password
 #   Plaintext password. Will be hashed into sha256 format in xml file
 #
+# @param access_management
+#   Parameter to grant access to SQL-driven access control and account management
+#
 # @param password_sha256
 #   Optional parameter. If defined, `$password` must not be defined
 #
@@ -33,7 +36,7 @@
 #
 # @example
 #   clickhouse::server::config::user { 'username':
-#       network   => {
+#       network            => {
 #           'ip'          => [
 #               '::',
 #               '0.0.0.0',
@@ -46,10 +49,11 @@
 #               '[^.]*\.domain\.TLD',
 #           ],
 #       },
-#       profile   => 'profile_name',
-#       quota     => 'quota_name',
-#       password  => 'password',
-#       databases => {
+#       profile            => 'profile_name',
+#       quota              => 'quota_name',
+#       password           => 'password',
+#       access_management  => 1,
+#       databases          => {
 #           'db_name' => {
 #               'table_name'         => ['filter'],
 #               'another_table_name' => ['another filter'],
@@ -69,6 +73,7 @@ define clickhouse::server::config::user (
     String[1]                  $quota              = 'default',
     String[1]                  $user               = $title,
     String[0]                  $password           = '',
+    Integer[0,1]               $access_management  = 0,
     Optional[
         Pattern[/\A[0-9a-fA-F]{64}\Z/]
     ]                          $password_sha256    = undef,
@@ -91,6 +96,7 @@ define clickhouse::server::config::user (
                 'networks'            => $networks,
                 'profile'             => [$profile],
                 'quota'               => [$quota],
+                'access_management'   => [$access_management],
             } + ( $databases ? {
                 undef   => {},
                 default => {'databases' => $databases},
